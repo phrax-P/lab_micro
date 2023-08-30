@@ -1,8 +1,15 @@
-# lab_micro
+### Universidad de Costa Rica
+#### IE-0624 Laboratorio de Microcontroladores
 
-Repositorio para los laboratorios del curso IE-0624 Laboratorio de Microcontroladores
-
-Profesor: MSc. Marco Villalta Fallas
-Estudiante: Kenny Wu Wen
-Carnet: C08592
 II Semestre 2023
+
+---
+
+* Estudiante: **Kenny Wu Wen**
+* Carné: **C08592**
+* Grupo: **1**
+
+---
+# `Laboratio 1` - *Introducción a microcontroladores y manejo de GPIOS*
+
+> Repositorio para los laboratorios del curso IE-0624 Laboratorio de Microcontroladores
