@@ -10,6 +10,7 @@ II Semestre 2023
 * Grupo: **1**
 
 ---
+
 # `Laboratio 1` - *Introducción a microcontroladores y manejo de GPIOS*
 
 > En este laboratorio se tuvo una breve introducción a los microcontradores, en especifico el PIC (Controlador de Interfaz Programable) y utilizar sus salidas de GPIO con el fin de crear un simulador de dado.
