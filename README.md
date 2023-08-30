@@ -11,4 +11,6 @@ II Semestre 2023
 
 ---
 
-> Repositorio para los laboratorios del curso IE-0624 Laboratorio de Microcontroladores
+# `Laboratio 1` - *Introducción a microcontroladores y manejo de GPIOS*
+
+> En este laboratorio se tuvo una breve introducción a los microcontradores, en especifico el PIC (Controlador de Interfaz Programable) y utilizar sus salidas de GPIO con el fin de crear un simulador de dado.
