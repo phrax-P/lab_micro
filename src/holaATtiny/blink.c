@@ -17,8 +17,6 @@ ISR (PCINT_B_vect) {
 }
 
 ISR (TIMER0_OVF_vect) {
-  PORTB |= 0x20; _delay_ms(DELAY);
-  PORTB &= ~0x20; _delay_ms(DELAY);
   if (en_delay) times = times + 1;
   TIMSK  &= 0x00;
 }
@@ -50,8 +48,9 @@ int main(void)
   setup();
   //Parpadear
   while (1) {
-    PORTB |= 0x10; _delay_ms(DELAY);
-    PORTB &= ~0x10; _delay_ms(DELAY);
+    PORTB |= 0x10; 
+    delay(1000);
+    PORTB &= ~0x10;
     delay(1000);
   }
 }
