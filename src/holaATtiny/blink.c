@@ -171,17 +171,19 @@ int main(void)
       // de peatones
       PORTD &= 0x00;
 
-      // Luz amarilla
-      PORTD |= 0x08;
       // tiempo debe ser 3s
       if (tiempo>=3) {
         sig_estado = pers_stop;
         tiempo = 0;
+      } 
+      else {
+        // Luz amarilla
+        PORTD |= 0x08;
+        delay(DELAY/2);
+        PORTD &= ~0x08;
+        delay(DELAY/2);
+        tiempo++;
       }
-      delay(DELAY/2);
-      PORTD &= ~0x08;
-      delay(DELAY/2);
-      tiempo++;
       break;
     // # QUINTO ESTADO--------------
 
