@@ -26,7 +26,8 @@ int times = 0;
 
 // Interrupcion boton B0/B1
 ISR (PCINT_B_vect) {
-  boton = 1;
+  boton  = 1;
+  PCMSK  &= 0x00; 
 }
 
 
@@ -95,7 +96,8 @@ int main(void)
       if (tiempo>=10 && boton==1) {
         sig_estado = veh_adv;
         tiempo = 0;
-        boton = 0;
+        boton  = 0;
+        PCMSK  |= 0x03; 
       } 
       // Se prende luz roja y se va haciendo
       // delays de 1s hasta llegar a 10
@@ -171,17 +173,19 @@ int main(void)
       // de peatones
       PORTD &= 0x00;
 
-      // Luz amarilla
-      PORTD |= 0x08;
       // tiempo debe ser 3s
       if (tiempo>=3) {
         sig_estado = pers_stop;
         tiempo = 0;
+      } 
+      else {
+        // Luz amarilla
+        PORTD |= 0x08;
+        delay(DELAY/2);
+        PORTD &= ~0x08;
+        delay(DELAY/2);
+        tiempo++;
       }
-      delay(DELAY/2);
-      PORTD &= ~0x08;
-      delay(DELAY/2);
-      tiempo++;
       break;
     // # QUINTO ESTADO--------------
 
