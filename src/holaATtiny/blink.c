@@ -26,7 +26,8 @@ int times = 0;
 
 // Interrupcion boton B0/B1
 ISR (PCINT_B_vect) {
-  boton = 1;
+  boton  = 1;
+  PCMSK  &= 0x00; 
 }
 
 
@@ -95,7 +96,8 @@ int main(void)
       if (tiempo>=10 && boton==1) {
         sig_estado = veh_adv;
         tiempo = 0;
-        boton = 0;
+        boton  = 0;
+        PCMSK  |= 0x03; 
       } 
       // Se prende luz roja y se va haciendo
       // delays de 1s hasta llegar a 10
