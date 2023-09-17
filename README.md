@@ -11,6 +11,10 @@ II Semestre 2023
 
 ---
 
+# `Laboratio 1` - *Introducción a microcontroladores y manejo de GPIOS*
+
+> En este laboratorio se tuvo una breve introducción a los microcontradores, en especifico el PIC (Controlador de Interfaz Programable) y utilizar sus salidas de GPIO con el fin de crear un simulador de dado.
+
 # `Laboratio 2` - *GPIOs, Timers y FSM*
 
 > En este laboratorio se utilizan nuevamente los GPIOs, se introducen los Timers de los microcontroladore y se va a utilizar maquinas de estado. Para este laboratorio se utilizara el microcontrolador ATtiny4313.
