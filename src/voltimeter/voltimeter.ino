@@ -116,7 +116,7 @@ void DC_mode() {
 }
 
 void Switch_mode(){
-  float button = analogRead(A5); 1023
+  float button = analogRead(A5);
 
   if(button < 512){
     AC_mode();
