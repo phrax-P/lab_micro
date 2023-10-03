@@ -30,7 +30,6 @@ void clear_display() {
 }
 
 
-
 float get_RMS(int PIN){
   const int samples = 1000;
   float tmax = 0.00;
@@ -78,7 +77,7 @@ void AC_mode(){
     lcd.print("CH3: ");
     lcd.print(vCH3);
     lcd.print("  ");
-    
+
     lcd.setCursor(0, 4);
     lcd.print("CH4: ");
     lcd.print(vCH4);
@@ -107,18 +106,22 @@ void DC_mode() {
     lcd.setCursor(0, 1);
     lcd.print("CH1: ");
     lcd.print(vCH1);
+    lcd.print("  ");
 
     lcd.setCursor(0, 2);
     lcd.print("CH2: ");
     lcd.print(vCH2);
+    lcd.print("  ");
 
     lcd.setCursor(0, 3);
     lcd.print("CH3: ");
     lcd.print(vCH3);
+    lcd.print("  ");
 
     lcd.setCursor(0, 4);
     lcd.print("CH4: ");
     lcd.print(vCH4);
+    lcd.print("  ");
 }
 
 void Switch_mode(){
