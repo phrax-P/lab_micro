@@ -134,5 +134,4 @@ void high_v_warming(float vCH1,
 
 void loop() {
     Switch_mode();
-    delay(1); 
 }
