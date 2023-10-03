@@ -68,7 +68,7 @@ void AC_mode(){
       vCH4 * 1.41);
 
     // Mostrar los valores en la pantalla
-    num_formt(vCH1, 1, "CH1: ")
+    num_formt(vCH1, 1, "CH1: ");
     /*lcd.setCursor(0, 1);
     lcd.print("CH1: ");
     lcd.print(vCH1);*/
