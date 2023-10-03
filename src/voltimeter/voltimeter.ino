@@ -18,7 +18,15 @@ void setup() {
     lcd.print("4 Channel");
     lcd.setCursor(1,2);
     lcd.print("Voltimeter!");
-    delay(5000);    
+    
+    attachInterrupt(digitalPinToInterrupt(2), clear_display, CHANGE);
+    
+    delay(2000);    
+    
+}
+
+void clear_display() {
+  lcd.clear();  
 }
 
 float get_RMS(int PIN){
@@ -108,7 +116,7 @@ void DC_mode() {
 }
 
 void Switch_mode(){
-  float button = analogRead(A5);
+  float button = analogRead(A5); 1023
 
   if(button < 512){
     AC_mode();
