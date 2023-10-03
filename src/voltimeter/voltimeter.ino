@@ -29,6 +29,12 @@ void clear_display() {
   lcd.clear();  
 }
 
+void num_formt(float value, int channel, const char* channel_name) {
+  lcd.setCursor(0, channel);
+  lcd.print(channel_name);
+  lcd.print(vCH1);
+}
+
 float get_RMS(int PIN){
   const int samples = 1000;
   float tmax = 0.00;
@@ -62,9 +68,10 @@ void AC_mode(){
       vCH4 * 1.41);
 
     // Mostrar los valores en la pantalla
-    lcd.setCursor(0, 1);
+    num_formt(vCH1, 1, "CH1: ")
+    /*lcd.setCursor(0, 1);
     lcd.print("CH1: ");
-    lcd.print(vCH1);
+    lcd.print(vCH1);*/
 
     lcd.setCursor(0, 2);
     lcd.print("CH2: ");
