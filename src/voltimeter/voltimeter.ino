@@ -36,7 +36,7 @@ float get_RMS(int PIN){
   }
 
 void AC_mode(){
-    lcd.clear(); // Borrar la pantalla
+    //lcd.clear(); // Borrar la pantalla
     lcd.setCursor(0, 0);
     lcd.print("MODO AC");
     lcd.print("(V)");
@@ -73,7 +73,7 @@ void AC_mode(){
 
 // Function to read and display DC mode
 void DC_mode() {
-    lcd.clear(); // Clear the LCD
+    //lcd.clear(); // Clear the LCD
     lcd.setCursor(0, 0);
     lcd.print("MODO DC");
 
