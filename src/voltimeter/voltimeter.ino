@@ -55,19 +55,19 @@ void AC_mode(){
 
     // Mostrar los valores en la pantalla
     lcd.setCursor(0, 1);
-    lcd.print("CH1 RMS: ");
+    lcd.print("CH1: ");
     lcd.print(vCH1);
 
     lcd.setCursor(0, 2);
-    lcd.print("CH2 RMS: ");
+    lcd.print("CH2: ");
     lcd.print(vCH2);
 
     lcd.setCursor(0, 3);
-    lcd.print("CH3 RMS: ");
+    lcd.print("CH3: ");
     lcd.print(vCH3);
 
     lcd.setCursor(0, 4);
-    lcd.print("CH4 RMS: ");
+    lcd.print("CH4: ");
     lcd.print(vCH4);
   }
 
