@@ -1,4 +1,5 @@
 import serial
+from re import search as re_search
 
 ser = serial.Serial(
     port = 'COM3',\
@@ -15,15 +16,32 @@ print(f'connected to: {ser.portstr}')
 
 line = []
 
+reg = r'MODO\s+(?P<mode>\w+)'
+
+f_line = True
+
 while True:
     for c in ser.read():
         c = chr(c)
         #print(c)
         line.append(c)
         if c=='\n':
-            print("Line: "+ ''.join(line))
+            print(''.join(line))
             str = ''.join(line)
-            f.write(str)
+            
+            re_result = re_search(reg, str)
+            if(re_result is not None):
+                if(re_result.group('mode') == 'AC'):
+                    if f_line:
+                        f.write(str.strip())
+                    else: f.write(','+ 'Vrms' + "\n" + str.strip())
+                else:
+                    if f_line:
+                        f.write(str.strip())
+                    else: f.write(',' + 'V' + "\n" + str.strip())
+            else:
+                f.write("," + str.strip())
+                f_line = False
             line = []
             break
         

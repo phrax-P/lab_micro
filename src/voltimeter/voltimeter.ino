@@ -40,13 +40,9 @@ void serial_display(const char *MODO,
    
    if(serial_en > converter){
     Serial.println(MODO);
-    Serial.println("CH1: ");
     Serial.println(vCH1);
-    Serial.println("CH2: ");
     Serial.println(vCH2);
-    Serial.println("CH3: ");
     Serial.println(vCH3);
-    Serial.println("CH4: ");
     Serial.println(vCH4);}
   }
 
