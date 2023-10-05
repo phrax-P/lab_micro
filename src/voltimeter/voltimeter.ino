@@ -3,8 +3,10 @@
 static PCD8544 lcd;
 float vCH1, vCH2, vCH3, vCH4 = {0.000};
 const float referenceVoltage = 24.00;
+#define converter 511.5
 
 void setup() {
+    Serial.begin(9600);
     pinMode(8, OUTPUT);
     pinMode(9, OUTPUT);
     pinMode(10, OUTPUT);
@@ -29,40 +31,33 @@ void clear_display() {
   lcd.clear();  
 }
 
-
-float get_RMS(int PIN){
-  const int samples = 1000;
-  float tmax = 0.00;
-  float one_sqrt = 0.7071;
-
-  for(int i = 0; i < samples; i++){
-    float t = analogRead(PIN);
-    if(t > tmax) tmax = t;
-    }
-    float t_rms = ((tmax - 512)*(referenceVoltage / 512));
-
-    return t_rms * one_sqrt;
+void serial_display(const char *MODO,
+                    float vCH1,
+                    float vCH2,
+                    float vCH3,
+                    float vCH4){
+   float serial_en = analogRead(A4);
+   
+   if(serial_en > converter){
+    Serial.println(MODO);
+    Serial.println("CH1: ");
+    Serial.println(vCH1);
+    Serial.println("CH2: ");
+    Serial.println(vCH2);
+    Serial.println("CH3: ");
+    Serial.println(vCH3);
+    Serial.println("CH4: ");
+    Serial.println(vCH4);}
   }
 
-void AC_mode(){
-    //lcd.clear(); // Borrar la pantalla
+void lcd_display(const char *MODO,
+                 float vCH1,
+                 float vCH2,
+                 float vCH3,
+                 float vCH4) {
     lcd.setCursor(0, 0);
-    lcd.print("MODO AC");
-    lcd.print("(V)");
-
-    // Calcular la tensión RMS para cada canal
-    vCH1 = get_RMS(A0);
-    vCH2 = get_RMS(A1);
-    vCH3 = get_RMS(A2);
-    vCH4 = get_RMS(A3);
-
-    high_v_warming(
-      vCH1 * 1.41,
-      vCH2 * 1.41,
-      vCH3 * 1.41,
-      vCH4 * 1.41);
-
-    // Mostrar los valores en la pantalla
+    lcd.print(MODO);
+    
     lcd.setCursor(0, 1);
     lcd.print("CH1: ");
     lcd.print(vCH1);
@@ -82,19 +77,50 @@ void AC_mode(){
     lcd.print("CH4: ");
     lcd.print(vCH4);
     lcd.print("  ");
+    
+}
+
+
+float get_RMS(int PIN){
+  const int samples = 1000;
+  float tmax = 0.00;
+  float one_sqrt = 0.7071;
+
+  for(int i = 0; i < samples; i++){
+    float t = analogRead(PIN);
+    if(t > tmax) tmax = t;
+    }
+    float t_rms = ((tmax - converter)*(referenceVoltage / converter));
+
+    return t_rms * one_sqrt;
+  }
+
+void AC_mode(){
+    // Calcular la tensión RMS para cada canal
+    vCH1 = get_RMS(A0);
+    vCH2 = get_RMS(A1);
+    vCH3 = get_RMS(A2);
+    vCH4 = get_RMS(A3);
+
+    high_v_warming(
+      vCH1 * 1.41,
+      vCH2 * 1.41,
+      vCH3 * 1.41,
+      vCH4 * 1.41);
+
+    // Mostrar los valores en la pantalla
+    lcd_display("MODO AC", vCH1, vCH2, vCH3, vCH4);
+    
+    serial_display("MODO AC",vCH1,vCH2,vCH3,vCH4);
   }
 
 // Function to read and display DC mode
 void DC_mode() {
-    //lcd.clear(); // Clear the LCD
-    lcd.setCursor(0, 0);
-    lcd.print("MODO DC");
-
     // Read the analog values from pins A0 to A3
-    vCH1 = (analogRead(A0) - 512) * (referenceVoltage / 512.0);
-    vCH2 = (analogRead(A1) - 512) * (referenceVoltage / 512.0);
-    vCH3 = (analogRead(A2) - 512) * (referenceVoltage / 512.0);
-    vCH4 = (analogRead(A3) - 512) * (referenceVoltage / 512.0);
+    vCH1 = (analogRead(A0) - converter) * (referenceVoltage / converter);
+    vCH2 = (analogRead(A1) - converter) * (referenceVoltage / converter);
+    vCH3 = (analogRead(A2) - converter) * (referenceVoltage / converter);
+    vCH4 = (analogRead(A3) - converter) * (referenceVoltage / converter);
 
     high_v_warming(
       vCH1,
@@ -102,32 +128,15 @@ void DC_mode() {
       vCH3,
       vCH4);
 
-    // Display the values on the LCD
-    lcd.setCursor(0, 1);
-    lcd.print("CH1: ");
-    lcd.print(vCH1);
-    lcd.print("  ");
+    lcd_display("MODO DC", vCH1, vCH2, vCH3, vCH4);
 
-    lcd.setCursor(0, 2);
-    lcd.print("CH2: ");
-    lcd.print(vCH2);
-    lcd.print("  ");
-
-    lcd.setCursor(0, 3);
-    lcd.print("CH3: ");
-    lcd.print(vCH3);
-    lcd.print("  ");
-
-    lcd.setCursor(0, 4);
-    lcd.print("CH4: ");
-    lcd.print(vCH4);
-    lcd.print("  ");
+    serial_display("MODO DC",vCH1,vCH2,vCH3,vCH4);
 }
 
 void Switch_mode(){
   float button = analogRead(A5);
 
-  if(button < 512){
+  if(button < converter){
     AC_mode();
   } else DC_mode();
 }
