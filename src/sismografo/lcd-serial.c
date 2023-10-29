@@ -37,6 +37,9 @@
 void setup();
 void init_message();
 void print_axes(struct axis axes);
+void button_setup(void);
+void blinkingLED_setup(void);
+void UART_COMM(struct axis axes);
 
 /*
  * This is our example, the heavy lifing is actually in lcd-spi.c but
@@ -51,13 +54,16 @@ int main(void)
 	sdram_init();
 	setup();
 	lcd_spi_init();
-
 	init_message();
 	struct axis lecturas;
 
 	while(1){
 		lecturas = read_axis();
 		print_axes(lecturas);
+		if (gpio_get(GPIOA, GPIO0)) {
+			UART_COMM();
+		}
+		else gpio_clear(GPIOG, GPIO13);
 	}
 	
 
@@ -66,6 +72,8 @@ int main(void)
 
 void setup(){
 	setup_spi();
+	button_setup();
+	blinkingLED_setup();
 
 	gpio_clear(GPIOC, GPIO1);
 	spi_send(SPI5, GYR_CTRL_REG1); 
@@ -105,7 +113,7 @@ void init_message(){
 	gfx_setCursor(15, 115);
 	gfx_puts("Oscar Fallas - B92861");
 	gfx_setCursor(15, 145);
-	gfx_puts("Kenny Wu - C01111");
+	gfx_puts("Kenny Wu - C08592");
 	lcd_show_frame();
 	console_puts("Now it has a bit of structured graphics.\n");
 	console_puts("Press a key for some simple animation.\n");
@@ -141,4 +149,42 @@ void print_axes(struct axis axes){
 	gfx_setCursor(100, 145);
 	gfx_puts(Z);
 	lcd_show_frame();
+}
+void button_setup(void) {
+	/* Enable GPIOA clock. */
+	rcc_periph_clock_enable(RCC_GPIOA);
+
+	/* Ponemos el GPIO0 (pin PA0) del puerto A como input*/
+	gpio_mode_setup(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_NONE, GPIO0);
+}
+void blinkingLED_setup(void){
+	/* Enable GPIOG clock. */
+	rcc_periph_clock_enable(RCC_GPIOG);
+
+	/* Set GPIO13 (in GPIO port G) to 'output push-pull' (pin PG13, el cual
+	corresponde a la una LED) */
+	gpio_mode_setup(GPIOG, GPIO_MODE_OUTPUT,
+			GPIO_PUPD_NONE, GPIO13);
+
+	/* LED de emergencia de bateria*/
+	gpio_mode_setup(GPIOG, GPIO_MODE_OUTPUT,
+			GPIO_PUPD_NONE, GPIO14);
+}
+
+void UART_COMM(struct axis axes) {
+	//Conversion de int a str
+	char X[20], Y[20], Z[20];
+
+	sprintf(X, "%d", axes.x);
+	sprintf(Y, "%d", axes.y);
+	sprintf(Z, "%d", axes.z);
+
+	gpio_toggle(GPIOG, GPIO13);
+			
+	console_puts(X);
+	console_puts("\t");
+	console_puts(Y);
+	console_puts("\t");
+	console_puts(Z);
+	console_puts("\n");
 }
