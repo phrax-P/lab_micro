@@ -60,11 +60,13 @@ int main(void)
 	while(1){
 		lecturas = read_axis();
 		print_axes(lecturas, COMM_EN);
-		COMM_EN = gpio_get(GPIOA, GPIO0);
-		if (COMM_EN) {
+		if (gpio_get(GPIOA, GPIO0)) {
+			COMM_EN = ~COMM_EN
+		}
+		if COMM_EN {
 			UART_COMM(lecturas);
 		}
-		else gpio_clear(GPIOG, GPIO13);
+		gpio_clear(GPIOG, GPIO13);
 	}
 	
 
@@ -195,4 +197,5 @@ void UART_COMM(struct axis axes) {
 	console_puts("\t");
 	console_puts(Z);
 	console_puts("\n");
+	msleep(500);
 }
