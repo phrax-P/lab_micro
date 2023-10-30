@@ -1,7 +1,6 @@
-import csv
+import csv, serial
 import time, json
 import paho.mqtt.client as mqtt
-
 
 #CLIENT METHODS
 def on_connect(client, userdata, flags, rc):
@@ -21,6 +20,16 @@ def on_log(client, userdata, level, buf):
 def on_publish(client, userdata, mid):
     print("In on_pub callback mid= ", mid)
 
+# Obtain data
+ser = serial.Serial(
+    port = '/dev/ttyACM0',\
+    baudrate = 115200,\
+    #parity = serial.PARITY_NONE,\
+    #stopbits=serial.STOPBITS_ONE,\
+    #bytesize=serial.EIGHTBITS,\
+    timeout=1\
+)
+
 #SETUP
 mqtt.Client.connect_flag        = False
 mqtt.Client.suppress_exceptions = False
@@ -32,29 +41,33 @@ client.on_log        = on_log
 port        =   1883
 broker      =   "iot.eie.ucr.ac.cr"
 topic       =   "v1/devices/me/telemetry" 
-username    =   'STM32 C08592/B92861'
-password    =   'w9fjlckvd764vq8ydotj'
-client.username_pw_set(username, password)
+device      =   'w9fjlckvd764vq8ydotj'
+client.username_pw_set(device)
 client.connect(broker, port)
 connected_flag = False
 while not connected_flag: 
     client.loop()
     time.sleep(0.5)
 
+filename = open('data.csv','w')
+output_file = csv.writer(filename)
+data_saved = {'X':[], 'Y':[], 'Z':[], 'B':[]}
 
-data = {'X':[], 'Y':[], 'Z':[], 'B':[]}
-
-#SEND INFORMATION
-with open('data.csv') as csv_file:
-    csv_reader = csv.reader(csv_file, delimiter=',')
-    for row in csv_reader:
-        data['X'].append(row[0])
-        data['Y'].append(row[1])
-        data['Z'].append(row[2])
-        data['B'].append(row[3])
-        output = json.dumps(data)
-        print("Topic: ", topic, "output= ", output)
-        pub = client.publish(topic, output, 0)
-        time.sleep(1)
-        
+print("Connection succeded")
+while (1):
+    data = ser.readline().decode('utf-8').replace("\n","").replace("\r","").split("\t")
+    data = [int(value) for value in data]
+    data['X'].append(data[0])
+    data['Y'].append(data[1])
+    data['Z'].append(data[2])
+    #data['B'].append(row[3]) fixme kenny
+    if len(data)!=3: # fixme kenny
+        continue
+    print(data)
+    output_file.writerow(data)
+    output = json.dumps(data)
+    print("Topic: ", topic, "output= ", output)
+    pub = client.publish(topic, output)
+    client.loop()
+    
 client.disconnect()
