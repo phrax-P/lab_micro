@@ -4,7 +4,7 @@ import paho.mqtt.client as mqtt
 
 #CLIENT METHODS
 def on_connect(client, userdata, flags, rc):
-    if rc:
+    if not rc:
         client.is_connected = True
         print('Connection established. Working')
     else:
@@ -12,7 +12,10 @@ def on_connect(client, userdata, flags, rc):
         client.loop_stop()
 
 def on_disconnect(client, userdata, rc):
-    print("Disconnection successful")
+    if(rc == 0):
+        print("Client disconneted OK")
+    else:
+        print("System disconnected via code: ", rc)
 
 def on_log(client, userdata, level, buf):
    print(buf) 
@@ -31,7 +34,7 @@ ser = serial.Serial(
 )
 
 #SETUP
-client = mqtt.Client('py1')
+client = mqtt.Client('B92861')
 client.on_connect    = on_connect
 client.on_disconnect = on_disconnect
 client.on_publish    = on_publish 
@@ -42,7 +45,7 @@ broker      =   "iot.eie.ucr.ac.cr"
 topic       =   "v1/devices/me/telemetry" 
 username    =   'STM32 C08592/B92861'
 password    =   'w9fjlckvd764vq8ydotj'
-client.username_pw_set(username, password)
+client.username_pw_set(password)
 client.connect(broker, port)
 while not client.is_connected: 
     client.loop()
@@ -62,11 +65,11 @@ while (1):
     #data['B'].append(row[3]) fixme kenny
     if len(data)!=3: # fixme kenny
         continue
-    print(data)
     output_file.writerow(data)
-    output = json.dumps(data)
+    output = json.dumps({"X": data[0], "Y": data[0], "Z": data[0]})
     print("Topic: ", topic, "output= ", output)
     pub = client.publish(topic, output)
+    #time.sleep(1)
     client.loop()
     
 #client.disconnect()
