@@ -36,7 +36,7 @@
 
 void setup();
 void init_message();
-void print_axes(struct axis axes);
+void print_axes(struct axis axes, int);
 void button_setup(void);
 void blinkingLED_setup(void);
 void UART_COMM(struct axis axes);
@@ -56,12 +56,13 @@ int main(void)
 	lcd_spi_init();
 	init_message();
 	struct axis lecturas;
-
+	int COMM_EN = 0;
 	while(1){
 		lecturas = read_axis();
-		print_axes(lecturas);
-		if (gpio_get(GPIOA, GPIO0)) {
-			UART_COMM();
+		print_axes(lecturas, COMM_EN);
+		COMM_EN = gpio_get(GPIOA, GPIO0);
+		if (COMM_EN) {
+			UART_COMM(lecturas);
 		}
 		else gpio_clear(GPIOG, GPIO13);
 	}
@@ -120,7 +121,7 @@ void init_message(){
 	msleep(8000);
 }
 
-void print_axes(struct axis axes){
+void print_axes(struct axis axes, int COMM_EN){
 	//Conversion de int a str
 	char X[20], Y[20], Z[20];
 
@@ -148,6 +149,13 @@ void print_axes(struct axis axes){
 	gfx_puts("Z : ");
 	gfx_setCursor(100, 145);
 	gfx_puts(Z);
+	gfx_setCursor(15, 175);
+	gfx_setTextSize(1);
+	if (COMM_EN) {
+		gfx_puts("SERIAL COMMS: ON");
+	}else {
+		gfx_puts("SERIAL COMMS: OFF");
+	}
 	lcd_show_frame();
 }
 void button_setup(void) {
