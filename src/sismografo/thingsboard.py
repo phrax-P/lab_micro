@@ -5,7 +5,7 @@ import paho.mqtt.client as mqtt
 #CLIENT METHODS
 def on_connect(client, userdata, flags, rc):
     if rc:
-        connected_flag = True
+        client.is_connected = True
         print('Connection established. Working')
     else:
         print('Connection Faild', rc)
@@ -31,21 +31,20 @@ ser = serial.Serial(
 )
 
 #SETUP
-mqtt.Client.connect_flag        = False
-mqtt.Client.suppress_exceptions = False
 client = mqtt.Client('py1')
 client.on_connect    = on_connect
 client.on_disconnect = on_disconnect
 client.on_publish    = on_publish 
 client.on_log        = on_log
+client.is_connected  = False
 port        =   1883
 broker      =   "iot.eie.ucr.ac.cr"
 topic       =   "v1/devices/me/telemetry" 
-device      =   'w9fjlckvd764vq8ydotj'
-client.username_pw_set(device)
+username    =   'STM32 C08592/B92861'
+password    =   'w9fjlckvd764vq8ydotj'
+client.username_pw_set(username, password)
 client.connect(broker, port)
-connected_flag = False
-while not connected_flag: 
+while not client.is_connected: 
     client.loop()
     time.sleep(0.5)
 
@@ -57,9 +56,9 @@ print("Connection succeded")
 while (1):
     data = ser.readline().decode('utf-8').replace("\n","").replace("\r","").split("\t")
     data = [int(value) for value in data]
-    data['X'].append(data[0])
-    data['Y'].append(data[1])
-    data['Z'].append(data[2])
+    data_saved['X'].append(data[0])
+    data_saved['Y'].append(data[1])
+    data_saved['Z'].append(data[2])
     #data['B'].append(row[3]) fixme kenny
     if len(data)!=3: # fixme kenny
         continue
@@ -70,4 +69,4 @@ while (1):
     pub = client.publish(topic, output)
     client.loop()
     
-client.disconnect()
+#client.disconnect()
