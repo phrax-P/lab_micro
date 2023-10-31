@@ -32,14 +32,18 @@
 #include <libopencm3/stm32/spi.h>
 #include <libopencm3/stm32/usart.h> 
 #include <libopencm3/stm32/adc.h>
-#include <libopencm3/cm3/nvic.h>
+#include <libopencm3/cm3/nvic.h>     
 
 void setup();
 void init_message();
-void print_axes(struct axis axes, int);
+void print_axes(struct axis axes, int, int);
 void button_setup(void);
 void blinkingLED_setup(void);
-void UART_COMM(struct axis axes);
+void UART_COMM(struct axis axes, int);
+void LOW_BAT(int*);
+static void adc_setup(void);
+static uint16_t read_adc_naiive(uint8_t channel);
+static int LOW_BATERY = 0;
 
 /*
  * This is our example, the heavy lifing is actually in lcd-spi.c but
@@ -57,14 +61,16 @@ int main(void)
 	init_message();
 	struct axis lecturas;
 	int COMM_EN = 0;
+	int batery = 0;
 	while(1){
 		lecturas = read_axis();
-		print_axes(lecturas, COMM_EN);
+		LOW_BAT(&batery);
+		print_axes(lecturas, COMM_EN, batery);
 		if (gpio_get(GPIOA, GPIO0)) {
-			COMM_EN = ~COMM_EN
+			COMM_EN = ~COMM_EN;
 		}
-		if COMM_EN {
-			UART_COMM(lecturas);
+		if (COMM_EN) {
+			UART_COMM(lecturas, batery);
 		}
 		gpio_clear(GPIOG, GPIO13);
 	}
@@ -77,6 +83,7 @@ void setup(){
 	setup_spi();
 	button_setup();
 	blinkingLED_setup();
+	adc_setup();
 
 	gpio_clear(GPIOC, GPIO1);
 	spi_send(SPI5, GYR_CTRL_REG1); 
@@ -94,6 +101,31 @@ void setup(){
 	spi_read(SPI5);
 	gpio_set(GPIOC, GPIO1);
 	
+}
+
+static void adc_setup(void)
+{
+	rcc_periph_clock_enable(RCC_ADC1);
+  	rcc_periph_clock_enable(RCC_GPIOA);
+	gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO1);
+
+	adc_power_off(ADC1);
+	adc_disable_scan_mode(ADC1);
+	adc_set_sample_time_on_all_channels(ADC1, ADC_SMPR_SMP_3CYC);
+
+	adc_power_on(ADC1);
+
+}
+
+static uint16_t read_adc_naiive(uint8_t channel)
+{
+	uint8_t channel_array[16];
+	channel_array[0] = channel;
+	adc_set_regular_sequence(ADC1, 1, channel_array);
+	adc_start_conversion_regular(ADC1);
+	while (!adc_eoc(ADC1));
+	uint16_t reg16 = adc_read_regular(ADC1);
+	return reg16;
 }
 
 void init_message(){
@@ -123,13 +155,14 @@ void init_message(){
 	msleep(8000);
 }
 
-void print_axes(struct axis axes, int COMM_EN){
+void print_axes(struct axis axes, int COMM_EN, int batery){
 	//Conversion de int a str
-	char X[20], Y[20], Z[20];
+	char X[20], Y[20], Z[20], bat[20];
 
 	sprintf(X, "%d", axes.x);
 	sprintf(Y, "%d", axes.y);
 	sprintf(Z, "%d", axes.z);
+	sprintf(bat, "%d", batery);
 
 	gfx_init(lcd_draw_pixel, 240, 320);
 	gfx_fillScreen(LCD_GREY);
@@ -158,6 +191,10 @@ void print_axes(struct axis axes, int COMM_EN){
 	}else {
 		gfx_puts("SERIAL COMMS: OFF");
 	}
+	gfx_setCursor(15, 205);
+	gfx_setTextSize(1);
+	gfx_puts("Batery: ");
+	gfx_puts(bat);
 	lcd_show_frame();
 }
 void button_setup(void) {
@@ -175,19 +212,19 @@ void blinkingLED_setup(void){
 	corresponde a la una LED) */
 	gpio_mode_setup(GPIOG, GPIO_MODE_OUTPUT,
 			GPIO_PUPD_NONE, GPIO13);
-
-	/* LED de emergencia de bateria*/
 	gpio_mode_setup(GPIOG, GPIO_MODE_OUTPUT,
 			GPIO_PUPD_NONE, GPIO14);
 }
 
-void UART_COMM(struct axis axes) {
+void UART_COMM(struct axis axes, int batery) {
 	//Conversion de int a str
-	char X[20], Y[20], Z[20];
+	char X[20], Y[20], Z[20], batery_s[20], low_bat[20];
 
 	sprintf(X, "%d", axes.x);
 	sprintf(Y, "%d", axes.y);
 	sprintf(Z, "%d", axes.z);
+	sprintf(batery_s, "%d", batery);
+	sprintf(low_bat, "%d", LOW_BATERY);
 
 	gpio_toggle(GPIOG, GPIO13);
 			
@@ -196,6 +233,25 @@ void UART_COMM(struct axis axes) {
 	console_puts(Y);
 	console_puts("\t");
 	console_puts(Z);
+	console_puts("\t");
+	console_puts(batery_s);
+	console_puts("\t");
+	console_puts(low_bat);
 	console_puts("\n");
 	msleep(500);
+}
+
+void LOW_BAT(int* ptr_bat){
+	uint16_t analog_read;
+	char analog[20];
+	analog_read = read_adc_naiive(1)*(9/4095);
+	*ptr_bat = analog_read*100;
+
+	if(*ptr_bat <= 78){
+		gpio_set(GPIOG, GPIO14);
+		LOW_BATERY = 1;
+	}else{
+		gpio_clear(GPIOG, GPIO14);
+		LOW_BATERY = 0;
+	}
 }

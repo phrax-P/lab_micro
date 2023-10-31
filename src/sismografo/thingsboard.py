@@ -27,9 +27,6 @@ def on_publish(client, userdata, mid):
 ser = serial.Serial(
     port = '/dev/ttyACM0',\
     baudrate = 115200,\
-    #parity = serial.PARITY_NONE,\
-    #stopbits=serial.STOPBITS_ONE,\
-    #bytesize=serial.EIGHTBITS,\
     timeout=1\
 )
 
@@ -53,7 +50,8 @@ while not client.is_connected:
 
 filename = open('data.csv','w')
 output_file = csv.writer(filename)
-data_saved = {'X':[], 'Y':[], 'Z':[], 'B':[]}
+data_saved = {'X':[], 'Y':[], 'Z':[], 'B':[], 'Alert':[]}
+on_off = {1: "BATERY LOW", 0: "--"}
 
 print("Connection succeded")
 while (1):
@@ -62,14 +60,13 @@ while (1):
     data_saved['X'].append(data[0])
     data_saved['Y'].append(data[1])
     data_saved['Z'].append(data[2])
-    #data['B'].append(row[3]) fixme kenny
-    if len(data)!=3: # fixme kenny
+    data_saved['B'].append(data[3])
+    data_saved['Alert'].append(data[4])
+    if len(data)!=5:
         continue
     output_file.writerow(data)
-    output = json.dumps({"X": data[0], "Y": data[0], "Z": data[0]})
+    output = json.dumps({"X": data[0], "Y": data[1], "Z": data[2], "B": data[3], "Alert":on_off[data[4]]})
     print("Topic: ", topic, "output= ", output)
     pub = client.publish(topic, output)
-    #time.sleep(1)
     client.loop()
     
-#client.disconnect()
