@@ -13,7 +13,6 @@ II Semestre 2023
 
 ---
 
-# `Laboratio 3` - *Arduino: GPIO,ADC y comunicaciones
-*
+# `Laboratio 4` - *STM32: GPIO, ADC, comunicaciones, Iot*
 
-> En este laboratorio se utilizan nuevamente los GPIO, el convertidor ADC, protocolos de comunicación como USART o SPI.
+> En este laboratorio se utilizan nuevamente los STM32, Thingsboard, MQTT y la libreria libopencm3.
