@@ -107,7 +107,7 @@ static void adc_setup(void)
 {
 	rcc_periph_clock_enable(RCC_ADC1);
   	rcc_periph_clock_enable(RCC_GPIOA);
-	gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO1);
+	gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO0);
 
 	adc_power_off(ADC1);
 	adc_disable_scan_mode(ADC1);
@@ -241,11 +241,11 @@ void UART_COMM(struct axis axes, int batery) {
 	msleep(500);
 }
 
-void LOW_BAT(int* ptr_bat){
+void LOW_BAT(int* ptr_bat){         
 	uint16_t analog_read;
 	char analog[20];
-	analog_read = read_adc_naiive(1)*(9/4095);
-	*ptr_bat = analog_read*100;
+	analog_read = read_adc_naiive(0)*(9.00/4095);
+	*ptr_bat = analog_read*(100/9.00);
 
 	if(*ptr_bat <= 78){
 		gpio_set(GPIOG, GPIO14);

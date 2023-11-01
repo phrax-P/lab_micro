@@ -1,6 +1,6 @@
 [submodule "src/libopencm3"]
 	path = src/libopencm3
 	url = https://github.com/libopencm3/libopencm3.git
-[submodule "src/libopencm3-examples"]
-	path = src/libopencm3-examples
+[submodule "libopencm3-examples"]
+	path = libopencm3-examples
 	url = https://github.com/libopencm3/libopencm3-examples.git
