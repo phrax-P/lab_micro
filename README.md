@@ -11,6 +11,7 @@ II Semestre 2023
 
 ---
 
-# `Laboratio 2` - *GPIOs, Timers y FSM*
+# `Laboratio 5` - *GPIO, Microfono, comunicaciones, TinyML*
 
-> En este laboratorio se utilizan nuevamente los GPIOs, se introducen los Timers de los microcontroladore y se va a utilizar maquinas de estado. Para este laboratorio se utilizara el microcontrolador ATtiny4313.
+> En este laboratorio se utilizan el Arduino Nano BLE 33 en especifico su microfono con el fin
+de utilizar Tiny Machine Learning para reconocer palabras.
