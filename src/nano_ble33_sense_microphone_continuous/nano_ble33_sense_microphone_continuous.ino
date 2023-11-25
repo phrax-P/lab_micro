@@ -113,6 +113,28 @@ void loop()
         ei_printf("ERR: Failed to run classifier (%d)\n", r);
         return;
     }
+    digitalWrite(LEDB, HIGH);
+    digitalWrite(LEDR, HIGH);
+    digitalWrite(LEDG, HIGH);
+    if (result.classification[1].value>0.7) {
+      digitalWrite(LEDR, LOW);
+    }
+    else if (result.classification[2].value>0.7) {
+      digitalWrite(LEDG, LOW);
+    }
+    else if (result.classification[3].value>0.7) {
+      digitalWrite(LEDB, LOW);
+    }
+    else if (result.classification[4].value>0.7) {
+      digitalWrite(LEDB, LOW);
+      digitalWrite(LEDG, LOW);
+    }
+    else {
+      digitalWrite(LEDB, HIGH);
+      digitalWrite(LEDR, HIGH);
+      digitalWrite(LEDG, HIGH);
+    }
+
     if (++print_results >= (EI_CLASSIFIER_SLICES_PER_MODEL_WINDOW)) {
         // print the predictions
         ei_printf("Predictions ");
