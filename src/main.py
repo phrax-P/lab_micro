@@ -34,7 +34,7 @@ def publish(client, msg):
 #SETUP
 broker = 'broker.emqx.io'
 port = 1883
-topic = "python/mqtt"
+topic = "carrito"
 # Generate a Client ID with the publish prefix.
 client_id = f'publish-{random.randint(0, 1000)}'
 # username = 'emqx'
@@ -90,15 +90,8 @@ def evento_boton(boton, mx, my, msg, new_msg):
 		dibujar_pant(screen, (255, 0, 0), boton)
 	return msg
 def main():
-	font = pygame.font.Font(None, 32)
 	click = False
 	msg = ""
-	active = False
-	txt = ""
-	done = False
-	color_inactive = pygame.Color('lightskyblue3')
-	color_active = pygame.Color('dodgerblue2')
-	color = color_inactive
 	start_time = time.localtime(time.time()).tm_sec
 	# Creamos los botones
 	botton_up = pygame.Rect(float(ANCHO / 2 - 50),
@@ -116,17 +109,8 @@ def main():
 	botton_bt = pygame.Rect(float(ANCHO / 2 - 300),
                         	float(ALTURA / 2 + 100),
                         	100, 100)
-	# input box
-	input_box = pygame.Rect(float(ANCHO / 2 + 250),
-                        	float(ALTURA / 2 - 100),
-                        	100, 100)
 	while True:
 		screen.fill(pygame.Color("black"))
-		txt_surface = font.render(txt, True, color)
-		width = max(200, txt_surface.get_width()+10)
-		input_box.w = width
-		screen.blit(txt_surface, (input_box.x+5, input_box.y+5))
-		dibujar_pant(screen, color, input_box, 2)
     # Dibujar en la ventana
 		draw_text('Menu', FONT, (255,255,255), screen, 412, 50)
 		draw_text(msg, FONT, (255,255,255), screen, ANCHO/2, ALTURA/2)
@@ -169,23 +153,9 @@ def main():
 			if event.type == MOUSEBUTTONDOWN:
 				if event.button == 1:
 					click = True
-				if input_box.collidepoint(event.pos):
-					active = not active
-				else:
-					active = False
-				color = color_active if active else color_inactive
-			if event.type == MOUSEBUTTONUP:	
+			if event.type == MOUSEBUTTONUP:
 					click = False
 					msg = ""
-			if event.type == pygame.KEYDOWN:
-				if active:
-					if event.key == pygame.K_RETURN:
-						print(txt)
-						txt = ''
-					elif event.key == pygame.K_BACKSPACE:
-						txt = txt[:-1]
-					else:
-						txt += event.unicode
 			# Ventana dinamica
 			if event.type == pygame.VIDEORESIZE:
             # There's some code to add back window content here.
