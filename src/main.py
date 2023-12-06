@@ -3,6 +3,7 @@ from pygame.locals import *
 import csv, serial, json
 import paho.mqtt.client as mqtt
 from paho.mqtt import client as mqtt_client
+import paho.mqtt.client as mqtt
 #CLIENT METHODS
 def connect_mqtt():
     def on_connect(client, userdata, flags, rc):
@@ -28,7 +29,26 @@ def publish(client, msg):
 	else:
 		print(f"Failed to send message to topic {topic}")
         
-        
+
+def on_connect(client, userdata, flags, rc):
+    if not rc:
+        client.is_connected = True
+        print('Connection established. Working')
+    else:
+        print('Connection Faild', rc)
+        client.loop_stop()
+
+def on_disconnect(client, userdata, rc):
+    if(rc == 0):
+        print("Client disconneted OK")
+    else:
+        print("System disconnected via code: ", rc)
+
+def on_log(client, userdata, level, buf):
+   print(buf) 
+
+def on_publish(client, userdata, mid):
+    print("In on_pub callback mid= ", mid)
 
 
 #SETUP
@@ -42,6 +62,24 @@ client_id = f'publish-{random.randint(0, 1000)}'
 
 client = connect_mqtt()
 
+#SETUP
+client2 = mqtt.Client('B928611')
+client2.on_connect    = on_connect
+client2.on_disconnect = on_disconnect
+client2.on_publish    = on_publish 
+client2.on_log        = on_log
+client2.is_connected  = False
+port        =   1883
+broker      =   "iot.eie.ucr.ac.cr"
+topic2       =   "v1/devices/me/telemetry" 
+username    =   'C08592/B92861'
+password    =   'brjxmov6h994bpdea2fr'
+client2.username_pw_set(password)
+client2.connect(broker, port)
+client2.setKeepAlive(15)
+while not client2.is_connected: 
+    client2.loop()
+    time.sleep(0.5)
 
 # Parametros
 ANCHO = 800
@@ -126,6 +164,8 @@ def main():
 			msg = evento_boton(botton_bt	, mx, my, msg, "STOP")
 			if (msg!=msg_ant):
 				publish(client, msg)
+				client2.publish(topic2, json.dumps({"mensaje": msg}))
+    
 			if botton_bt.collidepoint((mx, my)):
 				dibujar_pant(screen, (255, 255, 0), botton_bt)
 				#conectar_disp(target_addr)
