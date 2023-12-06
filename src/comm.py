@@ -1,63 +1,68 @@
-import serial, json, time
-import paho.mqtt.client as mqtt
+# python3.6
 
-# parameters
-port        =   1883
-broker      =   "iot.eie.ucr.ac.cr"
-topic       =   "v1/devices/me/telemetry" 
-username    =   'C08592/B92861'
-password    =   'brjxmov6h994bpdea2fr'
+import random
+import serial
+from paho.mqtt import client as mqtt_client
+from re import search as re_search
 
-#CLIENT METHODS
-def on_connect(client, userdata, flags, rc):
-    if not rc:
-        client.is_connected = True
-        client.subscribe(topic)
-        print('Connection established. Working')
-    else:
-        print('Connection Faild', rc)
-        client.loop_stop()
 
-def on_disconnect(client, userdata, rc):
-    if(rc == 0):
-        print("Client disconneted OK")
-    else:
-        print("System disconnected via code: ", rc)
+broker = 'broker.emqx.io'
+port = 1883
+topic = "carrito"
+# Generate a Client ID with the subscribe prefix.
+client_id = f'subscribe-{random.randint(0, 100)}'
+command = ''
+# username = 'emqx'
+# password = 'public'
 
-def on_log(client, userdata, level, buf):
-   print(buf) 
-
-def on_publish(client, userdata, mid):
-    print("In on_pub callback mid= ", mid)
-
-def on_message(client, userdata, message):
-    message_received=str(message.payload.decode("utf-8"))
-    msg = json.loads(message_received)
-    print(msg)
-    
-#SETUP
-client = mqtt.Client('B92861')
-client.on_connect    = on_connect
-client.on_disconnect = on_disconnect
-client.on_publish    = on_publish 
-client.on_log        = on_log
-client.on_message = on_message
-client.is_connected  = False
-client.username_pw_set(password)
-client.connect(broker, port)
-while not client.is_connected: 
-    client.loop()
-    time.sleep(0.5)
-    
 # Obtain data
-#ser = serial.Serial(
-#    port = 'COM9',\
-#    baudrate = 115200,\
-#    timeout=1\
-#)
+ser = serial.Serial(
+port = 'COM9',\
+baudrate = 9600,\
+timeout=1\
+)
 
-while (1):
-    #data_receive = ser.readline()
-    #print(data_receive)
-    client.loop()
-    #ser.write(b'f')
+
+def connect_mqtt() -> mqtt_client:
+    def on_connect(client, userdata, flags, rc):
+        if rc == 0:
+            print("Connected to MQTT Broker!")
+        else:
+            print("Failed to connect, return code %d\n", rc)
+
+    client = mqtt_client.Client(client_id)
+    # client.username_pw_set(username, password)
+    client.on_connect = on_connect
+    client.connect(broker, port)
+    return client
+
+
+def subscribe(client: mqtt_client):
+    def on_message(client, userdata, msg):
+        print(f"Received {msg.payload.decode()} from {msg.topic} topic")
+        command = msg.payload.decode()
+        reg = r'messages:\s+(?P<comando>\w+)'
+        reg_result = re_search(reg,command).group('comando')
+        if(reg_result == 'ARRIBA'):
+            ser.write(b'F')
+        elif(reg_result == 'ABAJO'):
+            ser.write(b'B')
+        elif(reg_result == 'IZQUIERDA'):
+            ser.write(b'L')
+        elif(reg_result == 'DERECHA'):
+            ser.write(b'R')
+        elif(reg_result == 'STOP'):
+            ser.write(b'S')
+
+
+    client.subscribe(topic)
+    client.on_message = on_message
+
+
+def run():
+    client = connect_mqtt()
+    subscribe(client)
+    client.loop_forever()
+
+if __name__ == '__main__':
+    run()
