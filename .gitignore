@@ -7,4 +7,5 @@ utensor.lib
 utensor/libutensor.a
 *.o
 *.d
+.vscode
 src/edge-impulse-sdk/*
