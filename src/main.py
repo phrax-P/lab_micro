@@ -76,7 +76,6 @@ username    =   'C08592/B92861'
 password    =   'brjxmov6h994bpdea2fr'
 client2.username_pw_set(password)
 client2.connect(broker, port)
-client2.setKeepAlive(15)
 while not client2.is_connected: 
     client2.loop()
     time.sleep(0.5)
