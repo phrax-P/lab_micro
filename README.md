@@ -5,8 +5,8 @@ II Semestre 2023
 
 ---
 
-* Estudiante: **Kenny Wu Wen**
-* Carné: **C08592**
+* Estudiante: **Kenny Wu Wen** | **Oscar Fallas Cordero**
+* Carné: **C08592** | **B92861**
 * Grupo: **1**
 
 ---
