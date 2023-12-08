@@ -11,6 +11,6 @@ II Semestre 2023
 
 ---
 
-# `Laboratio 2` - *GPIOs, Timers y FSM*
+# `Proyecto` - *Carro por control IoT*
 
-> En este laboratorio se utilizan nuevamente los GPIOs, se introducen los Timers de los microcontroladore y se va a utilizar maquinas de estado. Para este laboratorio se utilizara el microcontrolador ATtiny4313.
+> En este proyecto se implementó un carro utilizando Arduino UNO, y se realizó un software de control mediante IoT y Bluetooth. 
