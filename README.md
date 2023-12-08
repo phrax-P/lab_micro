@@ -11,7 +11,7 @@ II Semestre 2023
 
 ---
 
-# `Laboratio 5` - *GPIO, Microfono, comunicaciones, TinyML*
+# `Proyecto` - *Carro por control IoT*
 
-> En este laboratorio se utilizan el Arduino Nano BLE 33 en especifico su microfono con el fin
-de utilizar Tiny Machine Learning para reconocer palabras.
+> En este proyecto se implementó un carro utilizando Arduino UNO, y se realizó un software de control mediante IoT y Bluetooth. 
+
